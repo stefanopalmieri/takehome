@@ -283,7 +283,7 @@ class TaskDetailViewTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-class UserListViewTests(TestCase):
+class UserListCreateViewTests(TestCase):
     def test_user_list(self):
         """
         Return existing users in user list response
@@ -310,6 +310,37 @@ class UserListViewTests(TestCase):
                 ]
             }
         )
+
+    def test_user_create_authenticated(self):
+        """
+        Create a user
+        """
+        username = "admin"
+        user = User.objects.create(username=username)
+        user.save()
+
+        client = APIClient()
+        client.force_authenticate(user=user)
+        response = client.post(reverse('tasks:userslist'),
+            {
+                "username": "basic",
+                "tasks": []
+            })
+
+        self.assertEqual(response.status_code, 201)
+
+    def test_user_create_unauthenticated(self):
+        """
+        Create a user while not authenticated
+        """
+        client = APIClient()
+        response = client.post(reverse('tasks:userslist'),
+            {
+                "username": "basic",
+                "tasks": []
+            })
+
+        self.assertEqual(response.status_code, 403)
 
 class UserDetailViewTests(TestCase):
     def test_user_detail(self):

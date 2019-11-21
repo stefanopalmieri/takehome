@@ -73,10 +73,16 @@ class TaskDetail(APIView):
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class UserList(generics.ListAPIView):
+class UserList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                         IsOwnerOrReadOnly]
+
     queryset = User.objects.all().order_by('id')
     serializer_class = UserSerializer
 
 class UserDetail(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                         IsOwnerOrReadOnly]
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
